@@ -2,3 +2,7 @@ spring:
   threads:
     virtual:
       enabled: true
+telegram:
+    bot:
+      token: ${TELEGRAM_BOT_TOKEN}
+      my-chat-id: ${TELEGRAM_MY_CHAT_ID}
