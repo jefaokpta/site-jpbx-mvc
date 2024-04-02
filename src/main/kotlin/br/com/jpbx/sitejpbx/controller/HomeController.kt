@@ -1,5 +1,6 @@
 package br.com.jpbx.sitejpbx.controller
 
+import br.com.jpbx.sitejpbx.bot.TelegramSendMessage
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Controller
@@ -16,7 +17,7 @@ class HomeController {
 
 @RestController
 @RequestMapping("/api")
-class MessageController {
+class MessageController(private val telegramSendMessage: TelegramSendMessage) {
 
     @PostMapping("/new-message")
     fun newMessage(
@@ -30,9 +31,7 @@ class MessageController {
         println("Message: $message")
         println("Host: $host")
 
-        if (host != "localhost:8080") {
-            throw RuntimeException("Host invalido!")
-        }
+        telegramSendMessage.sendMessage("Name: $name\nEmail: $email\nMessage: $message")
 
         return jacksonObjectMapper().writeValueAsString(mapOf("response" to "Message received!"))
     }
