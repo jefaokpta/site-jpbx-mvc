@@ -280,11 +280,11 @@
                     <label for="message">Mensagem</label>
                     <div class="text-center text-danger small" id="message-error"></div>
                 </div>
-                <div class="alert alert-success" role="alert">
-                    <div class="" id="submitSuccessMessage"><div class="text-center text-success mb-3">👍🏼 Obrigado pelo contato! Responderei o mais rápido possivel.</div></div>
+                <div id="submitSuccessMessage" class="alert alert-success d-none" role="alert">
+                    <div class="text-center text-success mb-3">👍🏼 Obrigado pelo contato! Responderei o mais rápido possivel.</div>
                 </div>
-                <div class="alert alert-danger" role="alert">
-                    <div class="" id="submitErrorMessage"><div class="text-center text-danger mb-3">🛑 Não foi possivel receber sua mensagem, por favor tente mais tarde.</div></div>
+                <div id="submitErrorMessage" class="alert alert-danger d-none" role="alert">
+                    <div class="text-center text-danger mb-3">🛑 Não foi possivel receber sua mensagem, por favor tente mais tarde.</div>
                 </div>
                 <!-- Submit Button-->
                 <div class="d-grid"><button class="btn btn-primary btn-xl" id="submitButton" onclick="submit()">Enviar</button></div>
@@ -301,16 +301,20 @@
 <script>
     function submit() {
         const name = document.getElementById('name').value
+        const email = document.getElementById('email').value;
+        const message = document.getElementById('message').value;
+        document.querySelector('#name-error').innerText = ''
+        document.querySelector('#email-error').innerText = ''
+        document.querySelector('#message-error').innerText = ''
+
         if (name === '') {
             document.querySelector('#name-error').innerText = 'Nome obrigatório'
             return
         }
-        const email = document.getElementById('email').value;
         if (email === '') {
             document.querySelector('#email-error').innerText = 'Email obrigatório'
             return
         }
-        const message = document.getElementById('message').value;
         if (message === '') {
             document.querySelector('#message-error').innerText = 'Mensagem obrigatória'
             return
@@ -330,6 +334,13 @@
         }).then(response => {
             response.json().then(data => {
                 console.log(data)
+                if (data.status === 'success') {
+                    document.querySelector('#submitSuccessMessage').classList.remove('d-none');
+                    document.querySelector('#submitButton').classList.remove('disabled');
+                } else {
+                    document.querySelector('#submitErrorMessage').classList.remove('d-none');
+                    document.querySelector('#submitButton').classList.remove('disabled');
+                }
             })
         }).catch(error => {
             console.error('CAGOU', error)

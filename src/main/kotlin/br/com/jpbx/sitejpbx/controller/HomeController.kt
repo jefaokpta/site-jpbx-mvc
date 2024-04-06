@@ -33,6 +33,6 @@ class MessageController(private val telegramSendMessage: TelegramSendMessage) {
 
         telegramSendMessage.sendMessage("Name: $name\nEmail: $email\nMessage: $message")
 
-        return jacksonObjectMapper().writeValueAsString(mapOf("response" to "Message received!"))
+        return jacksonObjectMapper().writeValueAsString(mapOf("status" to "success"))
     }
 }
