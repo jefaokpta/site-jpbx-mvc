@@ -1,0 +1,121 @@
+/**
+ * @author Jefferson Alves Reis (jefaokpta) < jefaokpta@hotmail.com >
+ * Date: 27/10/23
+ */
+const socket = new JsSIP.WebSocketInterface(`wss://${webphone.domain}:8089/ws`)
+const configuration = {
+    sockets  : [ socket ],
+    uri      : `sip:${webphone.peer}@` + webphone.domain,
+    password : webphone.password,
+    register : false,
+};
+
+const ua = new JsSIP.UA(configuration);
+let session = null;
+
+uaEventHandling();
+ua.start();
+
+const callEventHandlers = {
+    'progress': function(e) {
+        console.log('call is in progress');
+    },
+    'failed': function(e) {
+        console.log(`call failed originator: ${e.originator} with cause: ${e.cause}`);
+    },
+    'ended': function(e) {
+        console.log(`call ended originator: ${e.originator} with cause: ${e.cause}`);
+    },
+    'confirmed': function(e) {
+        console.log('call atendida');
+    }
+};
+
+function audioListener(session){
+    session.connection.addEventListener('addstream', e => {
+        console.log('remote audio stream added');
+        const audio = new Audio()
+        audio.srcObject = e.stream;
+        audio.play();
+    });
+}
+
+const callOptions = {
+    'eventHandlers'    : callEventHandlers,
+    'mediaConstraints' : { 'audio': true, 'video': false },
+    'pcConfig'         : {
+        'rtcpMuxPolicy': 'require',
+        'iceServers'   : [
+            { 'urls': 'stun:stun.l.google.com:19302' }
+        ]
+    }
+};
+
+function uaEventHandling() {
+    //events of UA class with their callbacks
+
+    ua.on('registered', function (e) {
+        console.trace("registered", e);
+    });
+
+    ua.on('unregistered', e => {
+        console.trace("ua has been unregistered periodic registeration fails or ua.unregister()", e);
+    });
+    ua.on('registrationFailed', e => {
+        console.trace("register failed", e);
+    });
+    ua.on('connected', e => {
+        console.trace("connected to websocket");
+    });
+
+    ua.on('disconnected', e => {
+        console.trace("disconnected");
+        ua.stop();
+    });
+    ua.on('newRTCSession', e => {
+        session = e.session;
+        if (e.originator === 'local') {
+            console.trace(e.request + ' start outgoing session');
+            audioListener(session);
+        }
+        else {
+            console.trace(e.request + ' start incoming session');
+            newSession(e.session);
+        }
+    });
+
+}
+
+function newSession(session){
+    this.session = session;
+    this.session.on('connecting', e => console.log('connecting'));
+    this.session.on('peerconnection', e => {
+        console.log('peerconnection')
+        audioListener(session);
+    });
+    this.session.on('ended', e => console.log('ended'));
+    this.session.on('failed', e => console.log('failed'));
+    this.session.on('accepted', e => console.log('accepted'));
+    this.session.on('confirmed', e => console.log(' confirmed'));
+    this.session.on('addstream', e => console.log('addstream'));
+}
+
+function dial() {
+    const number = document.getElementById('number').value;
+    session = ua.call(`sip:${number}@${webphone.domain}`, callOptions);
+}
+
+function hangup() {
+    session.terminate();
+}
+
+function register() {
+    ua.register();
+}
+
+function answer() {
+    session.answer();
+}
+
+
+

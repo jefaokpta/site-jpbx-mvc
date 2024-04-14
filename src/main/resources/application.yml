@@ -4,5 +4,10 @@ spring:
       enabled: true
 telegram:
     bot:
-      token: ${TELEGRAM_BOT_TOKEN:telegram-token}
-      my-chat-id: ${TELEGRAM_MY_CHAT_ID:my-chat-id}
+      token: ${TELEGRAM_BOT_TOKEN}
+      my-chat-id: ${TELEGRAM_MY_CHAT_ID}
+
+web-phone:
+    domain: ${WEB_PHONE_DOMAIN}
+    username: ${WEB_PHONE_USERNAME}
+    password: ${WEB_PHONE_PASSWORD}

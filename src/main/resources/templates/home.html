@@ -298,7 +298,15 @@
         <div class="small text-center text-muted">Copyright &copy; 2024 - Criado com ❤️ por <a href="#develop">jefaokpta</a></div>
     </div>
 </footer>
+<span id="domain" th:text="${webPhone.webPhoneDomain}" hidden>domain</span>
+<span id="username" th:text="${webPhone.webPhoneUsername}" hidden>username</span>
+<span id="password" th:text="${webPhone.webPhonePassword}" hidden>password</span>
 <script>
+    const webphone = {
+        domain: document.getElementById('domain').innerText,
+        peer: document.getElementById('username').innerText,
+        password: document.getElementById('password').innerText
+    }
     function submit() {
         const name = document.getElementById('name').value
         const email = document.getElementById('email').value;
@@ -354,5 +362,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/SimpleLightbox/2.1.0/simpleLightbox.min.js"></script>
 <!-- Core theme JS-->
 <script src="assets/js/scripts.js"></script>
+<script src="assets/js/jssip.min.js"></script>
+<script src="assets/js/jssip-ua.js"></script>
 </body>
 </html>
