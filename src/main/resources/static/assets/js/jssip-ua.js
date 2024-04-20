@@ -12,22 +12,27 @@ const configuration = {
 
 const ua = new JsSIP.UA(configuration);
 let session = null;
+const phoneBtn = document.getElementById('phoneBtn');
 
 uaEventHandling();
 ua.start();
 
 const callEventHandlers = {
     'progress': function(e) {
-        console.log('call is in progress');
+        console.log('Call em andamento');
     },
     'failed': function(e) {
-        console.log(`call failed originator: ${e.originator} with cause: ${e.cause}`);
+        console.log(`Call falhou originator: ${e.originator} cause: ${e.cause}`);
     },
     'ended': function(e) {
-        console.log(`call ended originator: ${e.originator} with cause: ${e.cause}`);
+        console.log(`Call terminou originator: ${e.originator} with cause: ${e.cause}`);
+        changeCallBtnText('Testar Ligação')
+        callBtnDoCall();
     },
     'confirmed': function(e) {
-        console.log('call atendida');
+        console.log('Call atendida');
+        changeCallBtnText('Desligar')
+        callBtnDoHangup();
     }
 };
 
@@ -55,7 +60,7 @@ function uaEventHandling() {
     //events of UA class with their callbacks
 
     ua.on('registered', function (e) {
-        console.trace("registered", e);
+        console.trace("REGISTRADO 🎉", e);
     });
 
     ua.on('unregistered', e => {
@@ -65,7 +70,10 @@ function uaEventHandling() {
         console.trace("register failed", e);
     });
     ua.on('connected', e => {
-        console.trace("connected to websocket");
+        console.trace("conectado ao websocket do servidor de sinalização");
+        enableCallBtn();
+        callBtnDoCall();
+        changeCallBtnText('Testar Ligação')
     });
 
     ua.on('disconnected', e => {
@@ -75,7 +83,7 @@ function uaEventHandling() {
     ua.on('newRTCSession', e => {
         session = e.session;
         if (e.originator === 'local') {
-            console.trace(e.request + ' start outgoing session');
+            console.trace(e.request + ' iniciou sessao de saida');
             audioListener(session);
         }
         else {
@@ -101,8 +109,7 @@ function newSession(session){
 }
 
 function dial() {
-    const number = document.getElementById('number').value;
-    session = ua.call(`sip:${number}@${webphone.domain}`, callOptions);
+    session = ua.call(`sip:123456@${webphone.domain}`, callOptions);
 }
 
 function hangup() {
@@ -117,5 +124,21 @@ function answer() {
     session.answer();
 }
 
+function enableCallBtn() {
+    phoneBtn.classList.remove('disabled');
+}
 
+function changeCallBtnText(text) {
+    phoneBtn.innerText = text;
+}
+
+function callBtnDoCall(){
+    phoneBtn.removeEventListener('click', hangup);
+    phoneBtn.addEventListener('click', dial);
+}
+
+function callBtnDoHangup(){
+    phoneBtn.removeEventListener('click', dial);
+    phoneBtn.addEventListener('click', hangup);
+}
 
