@@ -15,7 +15,8 @@ class TelegramBot(private val telegramSecurity: TelegramSecurity): LongPollingSi
         if (update.hasMessage() && update.message.hasText()) {
             val message = update.message
             log.info("Message received: ${message.text} - chatID: ${message.chatId}")
-            val sendMessage = SendMessage(message.chatId.toString(), message.text)
+            val response = "Olá! Eu sou o bot do site JPBX. Conheça mais sobre o PBX IP JPBX em https://www.jpbx.com.br"
+            val sendMessage = SendMessage(message.chatId.toString(), response)
             telegramSecurity.getTelegramClient().execute(sendMessage)
         }
     }
