@@ -26,6 +26,7 @@ class HomeController(private val webPhoneSecurity: WebPhoneSecurity) {
 class MessageController(private val telegramSendMessage: TelegramSendMessage) {
 
     @PostMapping("/new-message")
+    @CrossOrigin
     fun newMessage(
         @RequestParam("name") name: String,
         @RequestParam("email") email: String,
